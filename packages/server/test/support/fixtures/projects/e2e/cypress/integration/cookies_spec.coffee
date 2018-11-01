@@ -1,31 +1,17 @@
-Cypress.Cookies.defaults({
-  whitelist: "foo1"
-})
-
-context "cookies", ->
+describe "cookies", ->
   beforeEach ->
     cy.wrap({foo: "bar"})
 
-  it "can get all cookies", ->
-    cy
-      .clearCookie("foo1")
-      .setCookie("foo", "bar").then (c) ->
-        expect(c.domain).to.eq("localhost")
-        expect(c.httpOnly).to.eq(false)
-        expect(c.name).to.eq("foo")
-        expect(c.value).to.eq("bar")
-        expect(c.path).to.eq("/")
-        expect(c.secure).to.eq(false)
-        expect(c.expiry).to.be.a("number")
+  context "with whitelist", ->
+    before ->
+      Cypress.Cookies.defaults({
+        whitelist: "foo1"
+      })
 
-        expect(c).to.have.keys(
-          "domain", "name", "value", "path", "secure", "httpOnly", "expiry"
-        )
-      .getCookies()
-        .should("have.length", 1)
-        .then (cookies) ->
-          c = cookies[0]
-
+    it "can get all cookies", ->
+      cy
+        .clearCookie("foo1")
+        .setCookie("foo", "bar").then (c) ->
           expect(c.domain).to.eq("localhost")
           expect(c.httpOnly).to.eq(false)
           expect(c.name).to.eq("foo")
@@ -87,9 +73,6 @@ context "cookies", ->
 
     it "should be only two left now", ->
       cy.getCookies().should("have.length", 2)
-
-    it "handles undefined cookies", ->
-      cy.visit("http://localhost:2121/cookieWithNoName")
 
   context "without whitelist", ->
     before ->
