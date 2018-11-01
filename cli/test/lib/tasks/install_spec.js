@@ -404,7 +404,7 @@ describe('/lib/tasks/install', function () {
       .then(() => {
         return snapshot(
           'silent install',
-          normalize(`[no output]${this.stdout.toString()}`)
+          normalize(this.stdout.toString() || '[no output]')
         )
       })
     })

@@ -11,12 +11,16 @@ const error = (...messages) => {
 }
 
 const warn = (...messages) => {
-  if (logLevel() === 'silent') return
   logs.push(messages.join(' '))
   console.log(chalk.yellow(...messages)) // eslint-disable-line no-console
 }
 
 const log = (...messages) => {
+  logs.push(messages.join(' '))
+  console.log(...messages) // eslint-disable-line no-console
+}
+
+const info = (...messages) => {
   if (logLevel() === 'silent' || logLevel() === 'warn') return
   logs.push(messages.join(' '))
   console.log(...messages) // eslint-disable-line no-console
@@ -39,6 +43,7 @@ const reset = () => {
 
 module.exports = {
   log,
+  info,
   warn,
   error,
   logLines,
