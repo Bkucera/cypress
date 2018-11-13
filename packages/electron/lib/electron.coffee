@@ -1,12 +1,11 @@
 fs       = require("fs-extra")
 cp       = require("child_process")
 path     = require("path")
-debug    = require("debug")("cypress:electron")
 Promise  = require("bluebird")
 minimist = require("minimist")
-inspector = require("inspector")
 paths    = require("./paths")
 install  = require("./install")
+log      = require("debug")("cypress:electron")
 
 fs = Promise.promisifyAll(fs)
 
@@ -15,14 +14,12 @@ module.exports = {
     install.check()
 
   install:  ->
-    debug("installing %j", arguments)
-
+    log("installing %j", arguments)
     install.package.apply(install, arguments)
 
   cli: (argv = []) ->
     opts = minimist(argv)
-
-    debug("cli options %j", opts)
+    log("cli options %j", opts)
 
     pathToApp = argv[0]
 
@@ -35,54 +32,39 @@ module.exports = {
         throw new Error("No path to your app was provided.")
 
   open: (appPath, argv, cb) ->
-    debug("opening %s", appPath)
-
+    log("opening %s", appPath)
     appPath = path.resolve(appPath)
     dest    = paths.getPathToResources("app")
-
-    debug("appPath %s", appPath)
-    debug("dest path %s", dest)
+    log("appPath %s", appPath)
+    log("dest path %s", dest)
 
     ## make sure this path exists!
     fs.statAsync(appPath)
     .then ->
-      debug("appPath exists %s", appPath)
-
+      log("appPath exists %s", appPath)
       ## clear out the existing symlink
       fs.removeAsync(dest)
     .then ->
       symlinkType = paths.getSymlinkType()
-
-      debug("making symlink from %s to %s of type %s", appPath, dest, symlinkType)
-
+      log("making symlink from %s to %s of type %s", appPath, dest, symlinkType)
       fs.ensureSymlinkAsync(appPath, dest, symlinkType)
     .then ->
       execPath = paths.getPathToExec()
-
-      debug("spawning %s", execPath)
-
-      ## we have an active debugger session
-      if inspector.url()
-        dp = process.debugPort + 1
-
-        argv.unshift("--inspect-brk=#{dp}")
-
+      log("spawning %s", execPath)
       cp.spawn(execPath, argv, {stdio: "inherit"})
       .on "close", (code) ->
-        debug("electron closing with code", code)
-
+        log("electron closing with code", code)
         if code
-          debug("original command was")
-          debug(execPath, argv.join(" "))
-
+          log("original command was")
+          log(execPath, argv.join(" "))
         if cb
-          debug("calling callback with code", code)
+          log("calling callback with code", code)
           cb(code)
-
         else
-          debug("process.exit with code", code)
+          log("process.exit with code", code)
           process.exit(code)
+
     .catch (err) ->
-      console.debug(err.stack)
+      console.log(err.stack)
       process.exit(1)
 }

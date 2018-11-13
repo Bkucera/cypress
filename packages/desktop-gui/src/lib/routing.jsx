@@ -6,7 +6,6 @@ const Link = ({ children, to, onClick }) => {
   const navigate = (e) => {
     e.preventDefault()
     if (onClick) onClick()
-
     to.navigate()
   }
 

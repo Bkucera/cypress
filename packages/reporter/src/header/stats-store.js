@@ -51,7 +51,6 @@ class StatsStore {
 
   incrementCount (type) {
     const countKey = `num${_.capitalize(type)}`
-
     this[countKey] = this[countKey] + 1
   }
 
@@ -77,5 +76,4 @@ class StatsStore {
 }
 
 export { StatsStore }
-
 export default new StatsStore()

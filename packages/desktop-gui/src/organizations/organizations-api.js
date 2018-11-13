@@ -7,13 +7,11 @@ const getOrgs = () => {
   ipc.getOrgs()
   .then((orgs = []) => {
     orgsStore.setOrgs(orgs)
-
     return null
   })
   .catch(ipc.isUnauthed, ipc.handleUnauthed)
   .catch((err) => {
     orgsStore.setError(err)
-
     return null
   })
 

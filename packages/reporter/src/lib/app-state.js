@@ -72,5 +72,4 @@ class AppState {
 }
 
 export { AppState }
-
 export default new AppState()

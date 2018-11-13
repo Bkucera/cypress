@@ -13,15 +13,11 @@ class ProjectsStore {
   }
 
   @computed get other () {
-    return _.filter(this.projects, (project) => {
-      return !project.isChosen
-    })
+    return _.filter(this.projects, (project) => !project.isChosen)
   }
 
   @computed get clientProjects () {
-    return _.map(this.projects, (project) => {
-      return _.pick(project, ['path', 'id'])
-    })
+    return _.map(this.projects, (project) => _.pick(project, ['path', 'id']))
   }
 
   @action getProjectByPath (path) {
@@ -37,7 +33,6 @@ class ProjectsStore {
     // or move it to the start if it already exists
     const existingIndex = _.findIndex(this.projects, { path })
     let project
-
     if (existingIndex > -1) {
       project = this.projects[existingIndex]
       this.projects.splice(existingIndex, 1)
@@ -55,9 +50,7 @@ class ProjectsStore {
   }
 
   @action setProjects (projects) {
-    this.projects = _.map(projects, (project) => {
-      return new Project(project)
-    })
+    this.projects = _.map(projects, (project) => new Project(project))
   }
 
   @action updateProjectsWithStatuses (projectsWithStatuses = []) {
@@ -89,9 +82,7 @@ class ProjectsStore {
   }
 
   serializeProjects () {
-    return _.map(this.projects, (project) => {
-      return project.serialize()
-    })
+    return _.map(this.projects, (project) => project.serialize())
   }
 
   membershipRequested (id) {

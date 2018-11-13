@@ -1,17 +1,31 @@
-describe "cookies", ->
+Cypress.Cookies.defaults({
+  whitelist: "foo1"
+})
+
+context "cookies", ->
   beforeEach ->
     cy.wrap({foo: "bar"})
 
-  context "with whitelist", ->
-    before ->
-      Cypress.Cookies.defaults({
-        whitelist: "foo1"
-      })
+  it "can get all cookies", ->
+    cy
+      .clearCookie("foo1")
+      .setCookie("foo", "bar").then (c) ->
+        expect(c.domain).to.eq("localhost")
+        expect(c.httpOnly).to.eq(false)
+        expect(c.name).to.eq("foo")
+        expect(c.value).to.eq("bar")
+        expect(c.path).to.eq("/")
+        expect(c.secure).to.eq(false)
+        expect(c.expiry).to.be.a("number")
 
-    it "can get all cookies", ->
-      cy
-        .clearCookie("foo1")
-        .setCookie("foo", "bar").then (c) ->
+        expect(c).to.have.keys(
+          "domain", "name", "value", "path", "secure", "httpOnly", "expiry"
+        )
+      .getCookies()
+        .should("have.length", 1)
+        .then (cookies) ->
+          c = cookies[0]
+
           expect(c.domain).to.eq("localhost")
           expect(c.httpOnly).to.eq(false)
           expect(c.name).to.eq("foo")

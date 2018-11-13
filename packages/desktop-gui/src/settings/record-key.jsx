@@ -45,7 +45,6 @@ class RecordKey extends Component {
     ) {
       this._loadKeys()
     }
-
     this.wasAuthenticated = authStore.isAuthenticated
   }
 

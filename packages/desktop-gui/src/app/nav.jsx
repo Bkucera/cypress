@@ -122,15 +122,14 @@ export default class Nav extends Component {
           {' '}{authStore.user.displayName}
         </span>
       )
-    }
-
-    return (
-      <span>
-        <i className='fa fa-sign-out'></i>{' '}
+    } else {
+      return (
+        <span>
+          <i className='fa fa-sign-out'></i>{' '}
           Log Out
-      </span>
-    )
-
+        </span>
+      )
+    }
   }
 
   _select = (item) => {

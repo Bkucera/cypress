@@ -81,11 +81,9 @@ export default class Project {
 
   @computed get displayPath () {
     const maxPathLength = 45
-
     if (this.path.length <= maxPathLength) return this.path
 
     const truncatedPath = this.path.slice((this.path.length - 1) - maxPathLength, this.path.length)
-
     return '...'.concat(truncatedPath)
   }
 
@@ -223,7 +221,6 @@ export default class Project {
 
   @action setChosenBrowserByName (name) {
     const browser = _.find(this.browsers, { name }) || this.defaultBrowser
-
     this.setChosenBrowser(browser)
   }
 

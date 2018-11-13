@@ -1,7 +1,6 @@
 export default {
   get (key) {
     const value = localStorage[key]
-
     return value && JSON.parse(value)
   },
 

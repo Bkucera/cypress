@@ -8,7 +8,6 @@ const util = require('../util')
 
 const getPlatformExecutable = () => {
   const platform = os.platform()
-
   switch (platform) {
     case 'darwin': return 'Contents/MacOS/Cypress'
     case 'linux': return 'Cypress'
@@ -20,7 +19,6 @@ const getPlatformExecutable = () => {
 
 const getPlatFormBinaryFolder = () => {
   const platform = os.platform()
-
   switch (platform) {
     case 'darwin': return 'Cypress.app'
     case 'linux': return 'Cypress'
@@ -32,7 +30,6 @@ const getPlatFormBinaryFolder = () => {
 
 const getBinaryPkgPath = (binaryDir) => {
   const platform = os.platform()
-
   switch (platform) {
     case 'darwin': return path.join(binaryDir, 'Contents', 'Resources', 'app', 'package.json')
     case 'linux': return path.join(binaryDir, 'resources', 'app', 'package.json')
@@ -55,14 +52,11 @@ const getVersionDir = (version = util.pkgVersion()) => {
 
 const getCacheDir = () => {
   let cache_directory = util.getCacheDir()
-
   if (util.getEnv('CYPRESS_CACHE_FOLDER')) {
     const envVarCacheDir = util.getEnv('CYPRESS_CACHE_FOLDER')
-
     debug('using environment variable CYPRESS_CACHE_FOLDER %s', envVarCacheDir)
     cache_directory = path.resolve(envVarCacheDir)
   }
-
   return cache_directory
 }
 
@@ -73,11 +67,9 @@ const parseRealPlatformBinaryFolderAsync = (binaryPath) => {
     if (!realPath.toString().endsWith(getPlatformExecutable())) {
       return false
     }
-
     if (os.platform() === 'darwin') {
       return path.resolve(realPath, '..', '..', '..')
     }
-
     return path.resolve(realPath, '..')
   })
 }
@@ -94,7 +86,6 @@ const getBinaryStateContentsAsync = (binaryDir) => {
   return fs.readJsonAsync(getBinaryStatePath(binaryDir))
   .catch({ code: 'ENOENT' }, SyntaxError, () => {
     debug('could not read binary_state.json file')
-
     return {}
   })
 }
@@ -128,19 +119,17 @@ const getPathToExecutable = (binaryDir) => {
 
 const getBinaryPkgVersionAsync = (binaryDir) => {
   const pathToPackageJson = getBinaryPkgPath(binaryDir)
-
   debug('Reading binary package.json from:', pathToPackageJson)
-
   return fs.pathExistsAsync(pathToPackageJson)
   .then((exists) => {
     if (!exists) {
       return null
     }
-
     return fs.readJsonAsync(pathToPackageJson)
     .get('version')
   })
 }
+
 
 module.exports = {
   getPathToExecutable,

@@ -80,7 +80,6 @@ export default class IframeModel {
     if (!snapshots || !snapshots.length) {
       this._clearSnapshots()
       this._setMissingSnapshotMessage()
-
       return
     }
 
@@ -101,7 +100,6 @@ export default class IframeModel {
 
     if (snapshots.length > 1) {
       let i = 0
-
       this.intervalId = setInterval(() => {
         if (this.isSnapshotPinned) return
 
@@ -170,7 +168,6 @@ export default class IframeModel {
     if (!snapshots || !snapshots.length) {
       eventManager.snapshotUnpinned()
       this._setMissingSnapshotMessage()
-
       return
     }
 
@@ -209,7 +206,6 @@ export default class IframeModel {
 
   _storeOriginalState () {
     const originalState = this.detachDom()
-
     if (!originalState) return
 
     const { body, htmlAttrs, headStyles, bodyStyles } = originalState

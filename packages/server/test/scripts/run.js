@@ -8,11 +8,7 @@ const os = require('os')
 
 const options = minimist(process.argv.slice(2))
 
-let run = options._[0]
-
-if (run.includes('--inspect-brk')) {
-  run = options._[1]
-}
+const run = options._[0]
 
 function exitErr (msg) {
   console.error(chalk.red(msg))
@@ -20,9 +16,8 @@ function exitErr (msg) {
   return process.exit(1)
 }
 
-const isWindows = () => {
-  return os.platform() === 'win32'
-}
+const isWindows = () =>
+  os.platform() === 'win32'
 
 if (!run) {
   return exitErr(`
@@ -53,21 +48,10 @@ if (isWindows()) {
   commandAndArguments.args = [
     '--xvfb-run-args ' +
     '"-as \\"-screen 0 1280x1024x8\\""',
-    'node',
+    'mocha',
+    run,
   ]
 }
-
-if (options['inspect-brk']) {
-  commandAndArguments.args.push(
-    '--inspect',
-    `--inspect-brk=${options['inspect-brk']}`
-  )
-}
-
-commandAndArguments.args.push(
-  'node_modules/.bin/_mocha',
-  run
-)
 
 if (options.fgrep) {
   commandAndArguments.args.push(
@@ -78,7 +62,7 @@ if (options.fgrep) {
 
 commandAndArguments.args.push(
   '--timeout',
-  options['inspect-brk'] ? '40000000' : '10000',
+  '10000',
   '--recursive',
   '--compilers',
   'ts:@packages/ts/register,coffee:@packages/coffee/register',
@@ -118,10 +102,8 @@ if (options.browser) {
 
 const cmd = `${commandAndArguments.command} ${
   commandAndArguments.args.join(' ')}`
-
 console.log('test command:')
 console.log(cmd)
 
 const child = execa.shell(cmd, { env, stdio: 'inherit' })
-
 child.on('exit', process.exit)

@@ -35,9 +35,7 @@ class Resizer extends Component {
       e.preventDefault()
 
       let width = e.clientX
-
       if (width < minWidth) width = minWidth
-
       if (width > maxWidth) width = maxWidth
 
       this.props.onResize(width)
@@ -48,7 +46,6 @@ class Resizer extends Component {
     if (this._isDragging) {
       this.props.onResizeEnd()
     }
-
     this._isDragging = false
   }
 

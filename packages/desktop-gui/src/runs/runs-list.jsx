@@ -161,27 +161,19 @@ class RunsList extends Component {
         return this._projectNotSetup()
 
       // the project is invalid
-      }
-
-      if (errors.isNotFound(this.runsStore.error)) {
+      } else if (errors.isNotFound(this.runsStore.error)) {
         return this._projectNotSetup(false)
 
       // they have been logged out
-      }
-
-      if (errors.isUnauthenticated(this.runsStore.error)) {
+      } else if (errors.isUnauthenticated(this.runsStore.error)) {
         return this._loginMessage()
 
       // they are not authorized to see runs
-      }
-
-      if (errors.isUnauthorized(this.runsStore.error)) {
+      } else if (errors.isUnauthorized(this.runsStore.error)) {
         return this._permissionMessage()
 
       // other error, but only show if we don't already have runs
-      }
-
-      if (!this.runsStore.isLoaded) {
+      } else if (!this.runsStore.isLoaded) {
         return <ErrorMessage error={this.runsStore.error} />
       }
     }
@@ -197,10 +189,9 @@ class RunsList extends Component {
         return this._projectNotSetup()
 
       // OR they have setup CI
+      } else {
+        return this._empty()
       }
-
-      return this._empty()
-
     }
     //--------End Run States----------//
 

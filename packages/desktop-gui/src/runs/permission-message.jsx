@@ -38,14 +38,11 @@ class PermissionMessage extends Component {
 
     if (this.state.result === SUCCESS || membershipRequested) {
       return this._success()
-    }
-
-    if (this.state.result === FAILURE) {
+    } else if (this.state.result === FAILURE) {
       return this._failure()
+    } else {
+      return this._noResult()
     }
-
-    return this._noResult()
-
   }
 
   _button () {
@@ -85,23 +82,22 @@ class PermissionMessage extends Component {
     // tell them it's all good
     if (errors.isDenied(error) || errors.isAlreadyRequested(error)) {
       return this._success()
-    }
-
-    return (
-      <div className='empty'>
-        <h4>
-          <i className='fa fa-exclamation-triangle failed'></i>{' '}
+    } else {
+      return (
+        <div className='empty'>
+          <h4>
+            <i className='fa fa-exclamation-triangle failed'></i>{' '}
             Request Failed
-        </h4>
-        <p>An unexpected error occurred while requesting access:</p>
-        <pre className='alert alert-danger'>
-          {this.state.error.message}
-        </pre>
-        <p>Try again.</p>
-        {this._button()}
-      </div>
-    )
-
+          </h4>
+          <p>An unexpected error occurred while requesting access:</p>
+          <pre className='alert alert-danger'>
+            {this.state.error.message}
+          </pre>
+          <p>Try again.</p>
+          {this._button()}
+        </div>
+      )
+    }
   }
 
   _noResult () {
@@ -139,7 +135,6 @@ class PermissionMessage extends Component {
   _setResult (error) {
     if (errors.isAlreadyMember(error)) {
       this.props.onRetry()
-
       return
     }
 

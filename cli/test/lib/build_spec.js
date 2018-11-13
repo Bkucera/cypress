@@ -7,13 +7,11 @@ const la = require('lazy-ass')
 const is = require('check-more-types')
 const R = require('ramda')
 
-const hasVersion = (json) => {
-  return la(is.semver(json.version), 'cannot find version', json)
-}
+const hasVersion = (json) =>
+  la(is.semver(json.version), 'cannot find version', json)
 
-const hasAuthor = (json) => {
-  return la(json.author === 'Brian Mann', 'wrong author name', json)
-}
+const hasAuthor = (json) =>
+  la(json.author === 'Brian Mann', 'wrong author name', json)
 
 const changeVersion = R.assoc('version', 'x.y.z')
 

@@ -24,28 +24,24 @@ describe('util', () => {
 
     it('matches entire output', () => {
       const line = '444'
-
       expect(stdoutLineMatches(line, line)).to.be.true
     })
 
     it('matches a line in output', () => {
       const line = '444'
       const stdout = ['start', line, 'something else'].join('\n')
-
       expect(stdoutLineMatches(line, stdout)).to.be.true
     })
 
     it('matches a trimmed line in output', () => {
       const line = '444'
       const stdout = ['start', `  ${line} `, 'something else'].join('\n')
-
       expect(stdoutLineMatches(line, stdout)).to.be.true
     })
 
     it('does not find match', () => {
       const line = '445'
       const stdout = ['start', '444', 'something else'].join('\n')
-
       expect(stdoutLineMatches(line, stdout)).to.be.false
     })
   })
@@ -57,7 +53,6 @@ describe('util', () => {
       const options = {
         foo: 'bar',
       }
-
       snapshot('others_unchanged', normalizeModuleOptions(options))
     })
 
@@ -65,7 +60,6 @@ describe('util', () => {
       const options = {
         env: 'foo=bar',
       }
-
       snapshot('env_as_string', normalizeModuleOptions(options))
     })
 
@@ -77,7 +71,6 @@ describe('util', () => {
           host: 'kevin.dev.local',
         },
       }
-
       snapshot('env_as_object', normalizeModuleOptions(options))
     })
 
@@ -88,7 +81,6 @@ describe('util', () => {
           watchForFileChanges: false,
         },
       }
-
       snapshot('config_as_object', normalizeModuleOptions(options))
     })
 
@@ -99,7 +91,6 @@ describe('util', () => {
           toConsole: true,
         },
       }
-
       snapshot('reporter_options_as_object', normalizeModuleOptions(options))
     })
 
@@ -109,7 +100,6 @@ describe('util', () => {
           'a', 'b', 'c',
         ],
       }
-
       snapshot('spec_as_array', normalizeModuleOptions(options))
     })
 
@@ -117,7 +107,6 @@ describe('util', () => {
       const options = {
         spec: 'x,y,z',
       }
-
       snapshot('spec_as_string', normalizeModuleOptions(options))
     })
   })
@@ -261,7 +250,6 @@ describe('util', () => {
 
       it('does nothing if debug is not enabled', () => {
         const log = sinon.spy()
-
         log.enabled = false
         util.printNodeOptions(log)
         expect(log).not.have.been.called
@@ -269,7 +257,6 @@ describe('util', () => {
 
       it('prints message when debug is enabled', () => {
         const log = sinon.spy()
-
         log.enabled = true
         util.printNodeOptions(log)
         expect(log).to.be.calledWith('NODE_OPTIONS is not set')
@@ -283,7 +270,6 @@ describe('util', () => {
 
       it('does nothing if debug is not enabled', () => {
         const log = sinon.spy()
-
         log.enabled = false
         util.printNodeOptions(log)
         expect(log).not.have.been.called
@@ -291,7 +277,6 @@ describe('util', () => {
 
       it('prints value when debug is enabled', () => {
         const log = sinon.spy()
-
         log.enabled = true
         util.printNodeOptions(log)
         expect(log).to.be.calledWith('NODE_OPTIONS=%s', 'foo')
@@ -302,7 +287,6 @@ describe('util', () => {
   describe('.getOsVersionAsync', () => {
     let util
     let getos = sinon.stub().resolves(['distro-release'])
-
     beforeEach(() => {
       util = proxyquire(`${lib}/util`, { getos })
     })

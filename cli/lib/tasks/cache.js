@@ -5,7 +5,6 @@ const util = require('../util')
 
 const path = () => {
   logger.log(state.getCacheDir())
-
   return undefined
 }
 

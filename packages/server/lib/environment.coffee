@@ -31,15 +31,12 @@ try
 ## or development as default
 env = process.env["CYPRESS_ENV"] or= pkg.env ? "development"
 
-config = {
+Promise.config({
   ## uses cancellation for automation timeouts
   cancellation: true
-}
 
-if env is "dev"
   ## enable long stack traces in dev
-  config.longStackTraces = true
-
-Promise.config(config)
+  longStackTraces: env is "development"
+})
 
 module.exports = env

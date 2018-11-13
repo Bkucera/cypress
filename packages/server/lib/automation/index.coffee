@@ -130,8 +130,9 @@ module.exports = {
         invokeAsync("onBeforeRequest", message, data)
         .then ->
           normalize(message, data, automate)
-        .tap (resp) ->
+        .then (resp) ->
           invokeAsync("onAfterResponse", message, data, resp)
+          .return(resp)
 
       response: (id, resp) ->
         if request = requests[id]

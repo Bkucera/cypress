@@ -22,14 +22,11 @@ class DurationTimer {
 
     this.timer.milliseconds = moment().diff(this.startTime)
 
-    this.timerId = setTimeout(() => {
-      return this.measure()
-    }, 10)
+    this.timerId = setTimeout(() => this.measure(), 10)
   }
 
   @action startTimer () {
     if (this.isRunning) return
-
     this.isRunning = true
     this.measure()
   }

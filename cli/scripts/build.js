@@ -51,8 +51,7 @@ function makeUserPackageFile () {
   .then((json) => {
     return fs.outputJsonAsync(packageJsonDest, json, {
       spaces: 2,
-    })
-    .return(json) // returning package json object makes it easy to test
+    }).then(() => json) // returning package json object makes it easy to test
   })
 }
 

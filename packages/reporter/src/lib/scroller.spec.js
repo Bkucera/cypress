@@ -35,14 +35,11 @@ describe('scroller', () => {
   })
 
   it('throws an error if attempting to scroll an element before setting a container', () => {
-    expect(() => {
-      return scroller.scrollIntoView({})
-    }).to.throw(/container must be set/)
+    expect(() => scroller.scrollIntoView({})).to.throw(/container must be set/)
   })
 
   it('does not scroll if near top and scrolling would result in negative scroll', () => {
     const container = getContainer()
-
     scroller.setContainer(container)
     scroller.scrollIntoView(getElement({ offsetTop: 0 }))
     expect(container.scrollTop).to.equal(0)
@@ -50,7 +47,6 @@ describe('scroller', () => {
 
   it('does not scroll if already full visible', () => {
     const container = getContainer()
-
     scroller.setContainer(container)
     scroller.scrollIntoView(getElement({ offsetTop: 80 }))
     expect(container.scrollTop).to.equal(0)
@@ -58,7 +54,6 @@ describe('scroller', () => {
 
   it('scrolls to the goal', () => {
     const container = getContainer({ scrollTop: 50 })
-
     scroller.setContainer(container)
     scroller.scrollIntoView(getElement({ offsetTop: 600 }))
     expect(container.scrollTop).to.equal(320)
@@ -103,7 +98,6 @@ describe('scroller', () => {
   context('scrolling', () => {
     it('listens to scroll event on container', () => {
       const container = getContainer()
-
       scroller.setContainer(container)
       expect(container.addEventListener).to.have.been.calledWith('scroll')
     })
@@ -111,7 +105,6 @@ describe('scroller', () => {
     it('calls onUserScroll callback if 3 or more user scroll events are detected within 50ms', () => {
       const container = getContainer()
       const onUserScroll = sinon.spy()
-
       scroller.setContainer(container, onUserScroll)
       container.addEventListener.callArg(1)
       clock.tick(15)
@@ -124,7 +117,6 @@ describe('scroller', () => {
     it('does nothing if 50ms passes before 3 user scroll events', () => {
       const container = getContainer()
       const onUserScroll = sinon.spy()
-
       scroller.setContainer(container, onUserScroll)
       container.addEventListener.callArg(1)
       container.addEventListener.callArg(1)
@@ -136,7 +128,6 @@ describe('scroller', () => {
     it('does nothing for programmatic scroll events', () => {
       const container = getContainer()
       const onUserScroll = sinon.spy()
-
       scroller.setContainer(container, onUserScroll)
       scroller.scrollIntoView(getElement({ offsetTop: 600 }))
       clock.tick(16)

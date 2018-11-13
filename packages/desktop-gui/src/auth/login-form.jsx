@@ -40,20 +40,18 @@ class LoginForm extends Component {
           Logging in...
         </span>
       )
-    }
-
-    return (
-      <span>
-        <i className='fa fa-github'></i>{' '}
+    } else {
+      return (
+        <span>
+          <i className='fa fa-github'></i>{' '}
           Log In with GitHub
-      </span>
-    )
-
+        </span>
+      )
+    }
   }
 
   _error () {
     const error = this.state.error
-
     if (!error) return null
 
     return (

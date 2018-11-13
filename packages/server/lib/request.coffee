@@ -3,7 +3,6 @@ r          = require("request")
 rp         = require("request-promise")
 url        = require("url")
 tough      = require("tough-cookie")
-debug      = require("debug")("cypress:server:request")
 moment     = require("moment")
 Promise    = require("bluebird")
 statusCode = require("./util/status_code")
@@ -11,9 +10,6 @@ Cookies    = require("./automation/cookies")
 
 Cookie    = tough.Cookie
 CookieJar = tough.CookieJar
-
-## shallow clone the original
-serializableProperties = Cookie.serializableProperties.slice(0)
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"
 
@@ -56,19 +52,10 @@ newCookieJar = ->
     _jar: j
 
     toJSON: ->
-      ## temporarily include the URL property
-      ## and restore afterwards. this is used to fix
-      ## https://github.com/cypress-io/cypress/issues/1321
-      Cookie.serializableProperties = serializableProperties.concat("url")
-      cookies = j.toJSON()
-      Cookie.serializableProperties = serializableProperties
-      return cookies
+      j.toJSON()
 
     setCookie: (cookieOrStr, uri, options) ->
-      ## store the original URL this cookie was set on
-      cookie = j.setCookieSync(cookieOrStr, uri, options)
-      cookie.url = uri
-      return cookie
+      j.setCookieSync(cookieOrStr, uri, options)
 
     getCookieString: (uri) ->
       j.getCookieStringSync(uri, {expire: false})
@@ -244,8 +231,6 @@ module.exports = (options = {}) ->
       Promise.try ->
         store = jar.toJSON()
 
-        debug("setting request jar cookies %o", store.cookies)
-
         ## this likely needs
         ## to be an 'each' not a map
         ## since we need to set cookies
@@ -300,8 +285,6 @@ module.exports = (options = {}) ->
           followRedirect.call(req, incomingRes)
 
       send = =>
-        debug("sending request as stream %o", _.omit(options, "jar"))
-
         str = @create(options)
         str.getJar = -> options.jar
         str

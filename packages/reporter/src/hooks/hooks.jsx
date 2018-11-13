@@ -32,5 +32,4 @@ const Hooks = observer(({ model }) => (
 ))
 
 export { Hook, HookHeader }
-
 export default Hooks

@@ -164,7 +164,6 @@ class Command extends Component {
 
   _isOtherCommandPinned () {
     const pinnedId = this.props.appState.pinnedSnapshotId
-
     return pinnedId != null && pinnedId !== this.props.model.id
   }
 
@@ -238,5 +237,4 @@ class Command extends Component {
 }
 
 export { Aliases, AliasesReferences, Message }
-
 export default Command

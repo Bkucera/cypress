@@ -22,7 +22,6 @@ module.exports = {
 
   start () {
     debug('Starting XVFB')
-
     return xvfb.startAsync()
     .catch({ nonZeroExitCode: true }, throwFormErrorText(errors.nonZeroExitCodeXvfb))
     .catch((err) => {
@@ -36,7 +35,6 @@ module.exports = {
 
   stop () {
     debug('Stopping XVFB')
-
     return xvfb.stopAsync()
   },
 
@@ -50,7 +48,6 @@ module.exports = {
     .then(R.T)
     .catch((err) => {
       debug('Could not verify xvfb: %s', err.message)
-
       return false
     })
     .finally(xvfb.stopAsync)

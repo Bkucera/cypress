@@ -21,7 +21,6 @@ describe('cypress', function () {
     const getCallArgs = R.path(['lastCall', 'args', 0])
     const getStartArgs = () => {
       expect(open.start).to.be.called
-
       return getCallArgs(open.start)
     }
 
@@ -49,12 +48,10 @@ describe('cypress', function () {
 
   context('.run', function () {
     let outputPath
-
     beforeEach(function () {
       outputPath = path.join(os.tmpdir(), 'cypress/monorepo/cypress_spec/output.json')
       sinon.stub(tmp, 'fileAsync').resolves(outputPath)
       sinon.stub(run, 'start').resolves()
-
       return fs.outputJsonAsync(outputPath, {
         code: 0,
         failingTests: [],
@@ -65,12 +62,10 @@ describe('cypress', function () {
     const normalizeCallArgs = (args) => {
       expect(args.outputPath).to.equal(outputPath)
       delete args.outputPath
-
       return args
     }
     const getStartArgs = () => {
       expect(run.start).to.be.called
-
       return normalizeCallArgs(getCallArgs(run.start))
     }
 

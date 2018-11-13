@@ -10,7 +10,6 @@ const cache = require('./tasks/cache')
 // we want to print help for the current command and exit with an error
 function unknownOption (flag, type = 'option') {
   if (this._allowUnknownOption) return
-
   logger.error()
   logger.error(`  error: unknown ${type}:`, flag)
   logger.error()
@@ -88,7 +87,6 @@ function includesVersion (args) {
 
 function showVersions () {
   debug('printing Cypress version')
-
   return require('./exec/versions')
   .getVersions()
   .then((versions = {}) => {
@@ -189,7 +187,6 @@ module.exports = {
       const defaultOpts = { force: true, welcomeMessage: false }
       const parsedOpts = parseOpts(opts)
       const options = _.extend(parsedOpts, defaultOpts)
-
       require('./tasks/verify')
       .start(options)
       .catch(util.logErrorExit1)
@@ -206,7 +203,6 @@ module.exports = {
       if (opts.command || !_.includes(['list', 'path', 'clear'], opts)) {
         unknownOption.call(this, `cache ${opts}`, 'sub-command')
       }
-
       cache[opts]()
     })
 
@@ -223,12 +219,10 @@ module.exports = {
     // Deprecated Catches
 
     const firstCommand = args[2]
-
     if (!_.includes(knownCommands, firstCommand)) {
       debug('unknown command %s', firstCommand)
       logger.error('Unknown command', `"${firstCommand}"`)
       program.outputHelp()
-
       return util.exit(1)
     }
 
@@ -239,9 +233,7 @@ module.exports = {
       // so we have to manually catch '-v, --version'
       return showVersions()
     }
-
     debug('program parsing arguments')
-
     return program.parse(args)
   },
 }

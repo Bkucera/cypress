@@ -54,5 +54,4 @@ class Runnable extends Component {
 }
 
 export { Suite }
-
 export default Runnable

@@ -88,7 +88,6 @@ module.exports = {
         options.env = _.extend({}, options.env, overrides)
 
         const child = cp.spawn(executable, args, options)
-
         child.on('close', resolve)
         child.on('error', reject)
 
@@ -138,9 +137,8 @@ module.exports = {
       return xvfb.start()
       .then(userFriendlySpawn)
       .finally(xvfb.stop)
+    } else {
+      return userFriendlySpawn()
     }
-
-    return userFriendlySpawn()
-
   },
 }

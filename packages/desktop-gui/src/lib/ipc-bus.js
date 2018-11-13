@@ -11,9 +11,7 @@ const addMsg = (id, event, fn) => {
 }
 
 const removeMsgsByEvent = (event) => {
-  msgs = _.omitBy(msgs, (msg) => {
-    return msg.event === event
-  })
+  msgs = _.omitBy(msgs, (msg) => msg.event === event)
 }
 
 const removeMsgById = (id) => {
@@ -22,7 +20,6 @@ const removeMsgById = (id) => {
 
 const createIpc = () => {
   console.warn('Missing "ipc". Polyfilling in development mode.') // eslint-disable-line no-console
-
   return {
     on () {},
     send () {},
@@ -42,9 +39,7 @@ ipc.on('response', (event, obj = {}) => {
 })
 
 const ipcBus = (...args) => {
-  if (args.length === 0) {
-    return msgs
-  }
+  if (args.length === 0) { return msgs }
 
   // our ipc interface can either be a standard
   // node callback or a promise interface
@@ -63,15 +58,12 @@ const ipcBus = (...args) => {
   const lastArg = args.pop()
 
   let fn
-
   // enable the last arg to be a function
   // which changes this interface from being
   // a promise to just calling the callback
   // function directly
   if (lastArg && _.isFunction(lastArg)) {
-    fn = () => {
-      return addMsg(id, event, lastArg)
-    }
+    fn = () => addMsg(id, event, lastArg)
   } else {
     // push it back onto the array
     args.push(lastArg)

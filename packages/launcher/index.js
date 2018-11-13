@@ -5,9 +5,7 @@
 if (process.env.CYPRESS_ENV !== 'production') {
   require('@packages/ts/register')
 }
-
 const launcher = require('./lib/launcher')
-
 module.exports = launcher
 
 if (!module.parent) {
@@ -18,7 +16,6 @@ if (!module.parent) {
   console.log('⛔️ please use it as a module, not from CLI')
 
   const pluralize = require('pluralize')
-
   launcher.detect().then((browsers) => {
     console.log('detected %s', pluralize('browser', browsers.length, true))
     console.log(browsers)

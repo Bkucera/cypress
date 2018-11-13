@@ -18,9 +18,7 @@ global.navigator = {
   appVersion: 'node',
   userAgent: 'node.js',
 }
-global.requestAnimationFrame = (fn) => {
-  return fn()
-}
+global.requestAnimationFrame = (fn) => fn()
 global.cancelAnimationFrame = () => {}
 
 // enzyme, and therefore chai-enzyme, needs to be required after

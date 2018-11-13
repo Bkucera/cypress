@@ -1,7 +1,6 @@
 _         = require("lodash")
 Promise   = require("bluebird")
 extension = require("@packages/extension")
-debug     = require("debug")("cypress:server:cookies")
 
 ## match the w3c webdriver spec on return cookies
 ## https://w3c.github.io/webdriver/webdriver-spec.html#cookies
@@ -69,30 +68,20 @@ cookies = (cyNamespace, cookieNamespace) ->
 
       delete data.includeHostOnly
 
-      debug("getting:cookies %o", data)
-
       automate(data)
       .then (cookies) ->
-        cookies = normalizeCookies(cookies, includeHostOnly)
-        cookies = _.reject(cookies, isNamespaced)
-
-        debug("received get:cookies %o", cookies)
-
-        return cookies
+        normalizeCookies(cookies, includeHostOnly)
+      .then (cookies) ->
+        _.reject(cookies, isNamespaced)
 
     getCookie: (data, automate) ->
-      debug("getting:cookie %o", data)
-
       automate(data)
       .then (cookie) ->
         if isNamespaced(cookie)
           throw new Error("Sorry, you cannot get a Cypress namespaced cookie.")
         else
-          cookie = normalizeCookieProps(cookie)
-
-          debug("received get:cookie %o", cookie)
-
-          return cookie
+          cookie
+      .then(normalizeCookieProps)
 
     setCookie: (data, automate) ->
       if isNamespaced(data)
@@ -101,8 +90,7 @@ cookies = (cyNamespace, cookieNamespace) ->
         cookie = normalizeCookieProps(data)
 
         ## lets construct the url ourselves right now
-        ## unless we already have a URL
-        cookie.url = data.url ? extension.getCookieUrl(data)
+        cookie.url = extension.getCookieUrl(data)
 
         ## https://github.com/SalesforceEng/tough-cookie#setcookiecookieorstring-currenturl-options-cberrcookie
         ## a host only cookie is when domain was not explictly
@@ -110,45 +98,24 @@ cookies = (cyNamespace, cookieNamespace) ->
         ## when this is the case we need to remove the domain
         ## property else our cookie will incorrectly be set
         ## as a domain cookie
-        ##
-        ## hostOnly=true means no domain= property was set, so
-        ##   this cookie is specific to being bound to the exact domain
-        ## hostOnly=false means that a domain= property was set, so
-        ##   this cookie has been relaxed to apply to multiple subdomains
         if data.hostOnly
           cookie = _.omit(cookie, "domain")
 
-        debug("set:cookie %o", cookie)
-
         automate(cookie)
-        .then (cookie) ->
-          cookie = normalizeCookieProps(cookie)
-
-          debug("received set:cookie %o", cookie)
-
-          return cookie
+        .then(normalizeCookieProps)
 
     clearCookie: (data, automate) ->
       if isNamespaced(data)
         throw new Error("Sorry, you cannot clear a Cypress namespaced cookie.")
       else
-        debug("clear:cookie %o", data)
-
         automate(data)
-        .then (cookie) ->
-          cookie = normalizeCookieProps(cookie)
-
-          debug("received clear:cookie %o", cookie)
-
-          return cookie
+        .then(normalizeCookieProps)
 
     clearCookies: (data, automate) ->
       cookies = _.reject(normalizeCookies(data), isNamespaced)
 
-      debug("clear:cookies %o", data)
-
       clear = (cookie) ->
-        automate("clear:cookie", { name: cookie.name })
+        automate("clear:cookie", {name: cookie.name})
         .then(normalizeCookieProps)
 
       Promise.map(cookies, clear)

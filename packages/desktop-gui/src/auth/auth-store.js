@@ -20,7 +20,6 @@ class AuthStore {
 
   @action setUser (user) {
     const isValid = user && user.authToken
-
     this.user = isValid ? new User(user) : null
   }
 }

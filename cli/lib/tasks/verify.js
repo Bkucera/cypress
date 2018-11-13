@@ -7,6 +7,7 @@ const { stripIndent } = require('common-tags')
 const Promise = require('bluebird')
 const logSymbols = require('log-symbols')
 
+
 const { throwFormErrorText, errors } = require('../errors')
 const util = require('../util')
 const logger = require('../logger')
@@ -15,9 +16,7 @@ const state = require('./state')
 
 const checkExecutable = (binaryDir) => {
   const executable = state.getPathToExecutable(binaryDir)
-
   debug('checking if executable exists', executable)
-
   return util.isExecutableAsync(executable)
   .then((isExecutable) => {
     debug('Binary is executable? :', isExecutable)
@@ -29,7 +28,6 @@ const checkExecutable = (binaryDir) => {
     if (util.isCi()) {
       return throwFormErrorText(errors.notInstalledCI(executable))()
     }
-
     return throwFormErrorText(errors.missingApp(binaryDir))(stripIndent`
       Cypress executable not found at: ${chalk.cyan(executable)}
     `)
@@ -39,37 +37,31 @@ const checkExecutable = (binaryDir) => {
 const runSmokeTest = (binaryDir) => {
   debug('running smoke test')
   const cypressExecPath = state.getPathToExecutable(binaryDir)
-
   debug('using Cypress executable %s', cypressExecPath)
 
   const onXvfbError = (err) => {
     debug('caught xvfb error %s', err.message)
-
     return throwFormErrorText(errors.missingXvfb)(`Caught error trying to run XVFB: "${err.message}"`)
   }
 
   const onSmokeTestError = (err) => {
     debug('Smoke test failed:', err)
-
     return throwFormErrorText(errors.missingDependency)(err.stderr || err.message)
   }
 
   const needsXvfb = xvfb.isNeeded()
-
   debug('needs XVFB?', needsXvfb)
 
   const spawn = () => {
     const random = _.random(0, 1000)
     const args = ['--smoke-test', `--ping=${random}`]
     const smokeTestCommand = `${cypressExecPath} ${args.join(' ')}`
-
     debug('smoke test command:', smokeTestCommand)
 
     return Promise.resolve(util.exec(cypressExecPath, args))
     .catch(onSmokeTestError)
     .then((result) => {
       const smokeTestReturned = result.stdout
-
       debug('smoke test stdout "%s"', smokeTestReturned)
 
       if (!util.stdoutLineMatches(String(random), smokeTestReturned)) {
@@ -93,14 +85,14 @@ const runSmokeTest = (binaryDir) => {
       return xvfb.stop()
       .catch(onXvfbError)
     })
+  } else {
+    return spawn()
   }
-
-  return spawn()
-
 }
 
 function testBinary (version, binaryDir) {
   debug('running binary verification check', version)
+
 
   logger.log(stripIndent`
   It looks like this is your first time using Cypress: ${chalk.cyan(version)}
@@ -112,19 +104,18 @@ function testBinary (version, binaryDir) {
   // the verbose renderer else use
   // the default
   let renderer = util.isCi() ? verbose : 'default'
-
   if (logger.logLevel() === 'silent') renderer = 'silent'
 
   const rendererOptions = {
     renderer,
   }
 
+
   const tasks = new Listr([
     {
       title: util.titleize('Verifying Cypress can run', chalk.gray(binaryDir)),
       task: (ctx, task) => {
         debug('clearing out the verified version')
-
         return state.clearBinaryStateAsync(binaryDir)
         .then(() => {
           return Promise.all([
@@ -134,7 +125,6 @@ function testBinary (version, binaryDir) {
         })
         .then(() => {
           debug('write verified: true')
-
           return state.writeBinaryVerifiedAsync(true, binaryDir)
         })
         .then(() => {
@@ -161,7 +151,6 @@ const maybeVerify = (installedVersion, binaryDir, options = {}) => {
     debug('is Verified ?', isVerified)
 
     let shouldVerify = !isVerified
-
     // force verify if options.force
     if (options.force) {
       debug('force verify')
@@ -193,7 +182,6 @@ const start = (options = {}) => {
 
   const parseBinaryEnvVar = () => {
     const envBinaryPath = util.getEnv('CYPRESS_RUN_BINARY')
-
     debug('CYPRESS_RUN_BINARY exists, =', envBinaryPath)
     logger.log(stripIndent`
         ${chalk.yellow('Note:')} You have set the environment variable: ${chalk.white('CYPRESS_RUN_BINARY=')}${chalk.cyan(envBinaryPath)}:
@@ -211,14 +199,11 @@ const start = (options = {}) => {
           `)
       }
     })
-    .then(() => {
-      return state.parseRealPlatformBinaryFolderAsync(envBinaryPath)
-    })
+    .then(() => state.parseRealPlatformBinaryFolderAsync(envBinaryPath))
     .then((envBinaryDir) => {
       if (!envBinaryDir) {
         return throwFormErrorText(errors.CYPRESS_RUN_BINARY.notValid(envBinaryPath))()
       }
-
       debug('CYPRESS_RUN_BINARY has binaryDir:', envBinaryDir)
 
       binaryDir = envBinaryDir
@@ -228,26 +213,20 @@ const start = (options = {}) => {
     })
   }
 
+
   return Promise.try(() => {
     debug('checking environment variables')
     if (util.getEnv('CYPRESS_RUN_BINARY')) {
       return parseBinaryEnvVar()
     }
   })
-  .then(() => {
-    return checkExecutable(binaryDir)
-  })
-  .tap(() => {
-    return debug('binaryDir is ', binaryDir)
-  })
-  .then(() => {
-    return state.getBinaryPkgVersionAsync(binaryDir)
-  })
+  .then(() => checkExecutable(binaryDir))
+  .tap(() => debug('binaryDir is ', binaryDir))
+  .then(() => state.getBinaryPkgVersionAsync(binaryDir))
   .then((binaryVersion) => {
 
     if (!binaryVersion) {
       debug('no Cypress binary found for cli version ', packageVersion)
-
       return throwFormErrorText(errors.missingApp(binaryDir))(`
       Cannot read binary version from: ${chalk.cyan(state.getBinaryPkgPath(binaryDir))}
     `)
@@ -267,6 +246,7 @@ const start = (options = {}) => {
 
         These versions may not work properly together.
       `)
+
 
       logger.log()
     }
