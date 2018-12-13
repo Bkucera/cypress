@@ -22,6 +22,12 @@ module.exports = {
       detail: 1
     })
 
+    mEnterEvtProps = $Keyboard.mixinModifiers({
+      bubbles: true
+      cancelable: true
+      view: win
+    })
+    mEnterEvt = new window.MouseEvent "mouseover", mEnterEvtProps
     mdownEvt = new window.MouseEvent "mousedown", mdownEvtProps
 
     ## ensure this property exists on older chromium versions
@@ -31,6 +37,7 @@ module.exports = {
       @_hasStoppedPropagation = true
       stopPropagation.apply(@, arguments)
 
+    el.dispatchEvent(mEnterEvt)
     cancelled = !el.dispatchEvent(mdownEvt)
 
     props = {

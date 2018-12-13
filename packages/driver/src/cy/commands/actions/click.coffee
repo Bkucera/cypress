@@ -154,7 +154,6 @@ module.exports = (Commands, Cypress, cy, state, config) ->
               cy.fireFocus(el)
 
             el = $elToClick.get(0)
-
             domEvents.mouseDown = $Mouse.mouseDown($elToClick, coords.fromViewport)
 
             ## if mousedown was cancelled then or caused
