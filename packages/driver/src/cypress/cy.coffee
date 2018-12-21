@@ -50,6 +50,9 @@ setWindowDocumentProps = (contentWindow, state) ->
 setRemoteIframeProps = ($autIframe, state) ->
   state("$autIframe", $autIframe)
 
+setActAsIsWindowHasFocus = (state) ->
+  state("setActAsIsWindowHasFocus", true)
+
 create = (specWindow, Cypress, Cookies, state, config, log) ->
   stopped = false
   commandFns = {}
@@ -659,6 +662,7 @@ create = (specWindow, Cypress, Cookies, state, config, log) ->
 
     initialize: ($autIframe) ->
       setRemoteIframeProps($autIframe, state)
+      setActAsIsWindowHasFocus(state)
 
       ## dont need to worry about a try/catch here
       ## because this is during initialize and its

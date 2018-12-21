@@ -139,6 +139,9 @@ create = (state) ->
       simulate()
 
   interceptFocus = (el, contentWindow, focusOption) ->
+    if (state('actAsIfWindowIsFocused') || true)
+      fireFocus(el)
+      return
     ## if our document does not have focus
     ## then that means that we need to attempt to
     ## bring our window into focus, and then figure

@@ -273,3 +273,119 @@ it 'opens the dropdown by force firing focus events', ->
       .click()
       .get('.Select-option:contains(Victoria)')
       .click()
+
+it 'sends programmatic blur immediately when window is out of focus', ->
+  cy
+  .visit("http://localhost:3500/fixtures/active-elements.html")
+  .then ->
+    events = []
+
+    expect(cy.getFocused()).to.be.null
+
+    doc = cy.state("document")
+
+    hasFocus = top.document.hasFocus()
+    # expect(doc.hasFocus()).to.be.false
+    ## programmatically focus the first, then second input element
+    $one = cy.$$("#one")
+    $two = cy.$$("#two")
+
+    ["focus", "blur"].forEach (evt) ->
+      $one.on evt, (e) ->
+        events.push(e.originalEvent)
+
+      $two.on evt, (e) ->
+        events.push(e.originalEvent)
+
+    $one.get(0).focus()
+    $two.get(0).focus()
+
+    expect(events).to.have.length(3)
+
+    expect(_.toPlainObject(events[0])).to.include({
+      type: "focus"
+      isTrusted: false
+      target: $one.get(0)
+    })
+
+    expect(_.toPlainObject(events[1])).to.include({
+      type: "blur"
+      isTrusted: false
+      target: $one.get(0)
+    })
+
+    expect(_.toPlainObject(events[2])).to.include({
+      type: "focus"
+      isTrusted: false
+      target: $two.get(0)
+    })
+
+
+
+        
+it 'not perform actionability if already focused inside input', ->
+  cy
+  .visit("http://localhost:3500/fixtures/active-elements.html")
+  .then ->
+
+    cy.$$('body').append(Cypress.$('
+    <div style="position:relative;width:100%;height:100px;background-color:salmon;top:60px;opacity:0.5"></div>
+    <input type="text" id="foo">
+    '))
+    win = cy.state('window')
+    doc = window.document
+    cy.$$('#foo').focus()
+  cy.focused().type('new text').should('have.prop', 'value', 'new text')
+
+        
+it 'not perform actionability if already focused inside textarea', ->
+  cy
+  .visit("http://localhost:3500/fixtures/active-elements.html")
+  .then ->
+
+    cy.$$('body').append(Cypress.$('
+    <div style="position:relative;width:100%;height:100px;background-color:salmon;top:60px;opacity:0.5"></div>
+    <textarea id="foo"></textarea>
+    '))
+    win = cy.state('window')
+    doc = window.document
+    cy.$$('#foo').focus()
+  cy.focused().type('new text').should('have.prop', 'value', 'new text')
+
+        
+it 'not perform actionability if already focused inside contenteditable', ->
+  cy
+  .visit("http://localhost:3500/fixtures/active-elements.html")
+  .then ->
+
+    cy.$$('body').append(Cypress.$('
+    <div style="position:relative;width:100%;height:100px;background-color:salmon;top:60px;opacity:0.5"></div>
+    <div id="foo" contenteditable>
+      <div>foo</div><div>bar</div><div>baz</div>
+    </div>
+    '))
+    win = cy.state('window')
+    doc = window.document
+    cy.$$('#foo').focus()
+    inner = cy.$$('div:contains(bar):last')
+    console.log(inner)
+    range = doc.createRange()
+    range.selectNodeContents(inner[0])
+    sel = win.getSelection()
+    sel.removeAllRanges()
+    sel.addRange(range)
+  cy.get('div:contains(bar):last').type('new text').should('have.prop', 'innerText', 'new text')
+
+
+it.only ' 2 2 2 2 not perform actionability if already focused inside contenteditable', ->
+  cy
+  .visit("http://localhost:3500/fixtures/active-elements.html")
+  .then ->
+
+    cy.$$('body').append(Cypress.$('
+    <div id="foo" contenteditable>
+      <div>foo</div><div>bar</div><div>baz</div>
+    </div>
+    '))
+   
+  cy.get('div:contains(bar):last').click().type('new text').should('have.prop', 'innerText', 'new text')

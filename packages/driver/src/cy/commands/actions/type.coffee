@@ -328,6 +328,13 @@ module.exports = (Commands, Cypress, cy, state, config) ->
         ## if it's the body, don't need to worry about focus
         return type() if isBody
 
+        ## if the cursor is already located in the element, start typing
+        $focused = cy.getFocused()
+        $focused = $focused && $focused[0]
+
+        if options.$el[0] is $focused
+          return type()
+
         $actionability.verify(cy, options.$el, options, {
           onScroll: ($el, type) ->
             Cypress.action("cy:scrolled", $el, type)
@@ -341,6 +348,7 @@ module.exports = (Commands, Cypress, cy, state, config) ->
             ## if we dont have a focused element
             ## or if we do and its not ourselves
             ## then issue the click
+            debugger
             if not $focused or ($focused and $focused.get(0) isnt options.$el.get(0))
               ## click the element first to simulate focus
               ## and typical user behavior in case the window
