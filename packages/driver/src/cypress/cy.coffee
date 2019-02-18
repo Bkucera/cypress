@@ -50,7 +50,7 @@ setWindowDocumentProps = (contentWindow, state) ->
 setRemoteIframeProps = ($autIframe, state) ->
   state("$autIframe", $autIframe)
 
-create = (specWindow, Cypress, Cookies, state, config, log) ->
+create = (specWindow, Cypress, Cookies, state, config, log, chai) ->
   stopped = false
   commandFns = {}
 
@@ -82,7 +82,7 @@ create = (specWindow, Cypress, Cookies, state, config, log) ->
   focused = $Focused.create(state)
   timers = $Timers.create()
 
-  { expect } = $Chai.create(specWindow, assertions.assert)
+  { expect } = $Chai.create(chai, specWindow, assertions.assert)
 
   xhrs = $Xhrs.create(state)
   aliases = $Aliases.create(state)

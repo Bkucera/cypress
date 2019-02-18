@@ -5,6 +5,7 @@ minimatch = require("minimatch")
 moment = require("moment")
 Promise = require("bluebird")
 sinon = require("sinon")
+chai = require("chai")
 lolex = require("lolex")
 
 $dom = require("./dom")
@@ -164,7 +165,7 @@ class $Cypress
       @log.apply(@, arguments)
 
     ## create cy and expose globally
-    @cy = window.cy = $Cy.create(specWindow, @, @Cookies, @state, @config, logFn)
+    @cy = window.cy = $Cy.create(specWindow, @, @Cookies, @state, @config, logFn, chai)
     @log = $Log.create(@, @cy, @state, @config)
     @mocha = $Mocha.create(specWindow, @)
     @runner = $Runner.create(specWindow, @mocha, @, @cy)
@@ -479,6 +480,7 @@ class $Cypress
   Promise: Promise
   minimatch: minimatch
   sinon: sinon
+  # chai: chai
   lolex: lolex
 
   @create = (config) ->

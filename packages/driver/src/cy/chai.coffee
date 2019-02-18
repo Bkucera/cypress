@@ -1,6 +1,5 @@
 _ = require("lodash")
 $ = require("jquery")
-chai = require("chai")
 sinonChai = require("@cypress/sinon-chai")
 
 $dom = require("../dom")
@@ -293,7 +292,12 @@ chai.use (chai, u) ->
     expect = overrideExpect()
     assert = overrideAssert()
 
-    specWindow.chai   = chai
+    ## Deprecate global window.chai
+    Object.defineProperty(specWindow, 'chai', {
+      get: ->
+        console.warn('accessing global chai is deprecated, please use Cypress.chai instead.')
+        return chai
+    })
     specWindow.expect = expect
     specWindow.assert = assert
 
@@ -303,7 +307,7 @@ chai.use (chai, u) ->
       assert
     }
 
-  create = (specWindow, assertFn) ->
+  create = (chai, specWindow, assertFn) ->
     # restoreOverrides()
     restoreAsserts()
 
