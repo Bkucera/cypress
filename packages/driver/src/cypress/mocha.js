@@ -9,6 +9,7 @@ const { Test } = Mocha
 const { Runner } = Mocha
 const { Runnable } = Mocha
 
+const testClone = Test.prototype.clone
 const runnerRun = Runner.prototype.run
 const runnerFail = Runner.prototype.fail
 const runnableRun = Runnable.prototype.run
@@ -108,12 +109,27 @@ const restoreRunnableRun = () => {
   return Runnable.prototype.run = runnableRun
 }
 
+const patchTestClone = () => {
+  return Test.prototype.clone = function (...args) {
+    if (this.trueFn) {
+      this.fn = this.trueFn
+    }
+
+    const ret = testClone.apply(this, args)
+
+    ret.id = this.id
+    ret.err = null
+
+    return ret
+  }
+}
+
 //# matching the current Runner.prototype.fail except
 //# changing the logic for determing whether this is a valid err
 const patchRunnerFail = () => {
   return Runner.prototype.fail = function (runnable, err) {
-  //# if this isnt a correct error object then just bail
-  //# and call the original function
+    //# if this isnt a correct error object then just bail
+    //# and call the original function
     if (Object.prototype.toString.call(err) !== '[object Error]') {
       return runnerFail.call(this, runnable, err)
     }
@@ -189,6 +205,7 @@ const override = function (Cypress) {
   patchRunnerFail()
   patchRunnableRun(Cypress)
   patchRunnableClearTimeout()
+  patchTestClone()
 
   return patchRunnableResetTimeout()
 }
@@ -207,6 +224,10 @@ const create = function (specWindow, Cypress, reporter) {
 
   return {
     _mocha,
+
+    override () {
+      return override(Cypress)
+    },
 
     createRootTest (title, fn) {
       const r = new Test(title, fn)
