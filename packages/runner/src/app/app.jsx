@@ -4,7 +4,7 @@ import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 import { findDOMNode } from 'react-dom'
-import { Reporter } from '../../../reporter'
+const { Reporter } = require('../../../reporter/dist/reporter')
 import { $ } from '@packages/driver'
 
 import errorMessages from '../errors/error-messages'

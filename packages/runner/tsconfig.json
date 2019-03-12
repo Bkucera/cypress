@@ -8,6 +8,8 @@
      * Override this in modules that need JS
      */
     // "allowJs": true,
+    "allowJs": true,
+    "jsx": "react",
     "noImplicitAny": false,
     "noImplicitThis": false,
     "preserveWatchOutput": true,
