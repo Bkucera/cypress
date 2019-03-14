@@ -89,6 +89,10 @@ const getRunner = function (_mocha) {
   return _mocha.run()
 }
 
+const restoreTestClone = () => {
+  return Test.prototype.clone = testClone
+}
+
 const restoreRunnableClearTimeout = () => {
   return Runnable.prototype.clearTimeout = runnableClearTimeout
 }
@@ -117,8 +121,10 @@ const patchTestClone = () => {
 
     const ret = testClone.apply(this, args)
 
+    // this.callTestAfterRun()
+
     ret.id = this.id
-    ret.err = null
+    delete ret.err
 
     return ret
   }
@@ -197,6 +203,7 @@ const restore = function () {
   restoreRunnerFail()
   restoreRunnableRun()
   restoreRunnableClearTimeout()
+  restoreTestClone()
 
   return restoreRunnableResetTimeout()
 }
