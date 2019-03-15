@@ -16,7 +16,7 @@ let lastActual = 'none'
 describe('src/cypress/runner', () => {
   /**
    * @type {sinon.SinonStub}
-   */
+	 */
   let allStubs
 
   before(() => {
@@ -28,52 +28,42 @@ describe('src/cypress/runner', () => {
     })
 
     container.append(btn)
-    cy.visit('/fixtures/generic.html')
   })
 
   beforeEach(function () {
     window.cy = backupCy
     window.Cypress = backupCypress
-    backupCypress.mocha.override()
-    cy.state('returnedCustomPromise', false)
 
-    const autWindow = cy.state('window')
-    // delete top.Cypress
+    cy
+    .visit('/fixtures/generic.html')
+    .then((autWindow) => {
+      this.Cypress = Cypress.$Cypress.create(Cypress.config())
+      this.Cypress.onSpecWindow(autWindow)
+      this.Cypress.initialize($('.aut-iframe', top.document))
 
-    this.Cypress = Cypress.$Cypress.create(Cypress.config())
-    this.Cypress.onSpecWindow(autWindow)
-    this.Cypress.initialize($('.aut-iframe', top.document))
+      this.runMochaTests = (obj) => {
+        helpers.generateMochaTestsForWin(autWindow, obj)
 
-    window.cy = backupCy
-    window.Cypress = backupCypress
+        this.Cypress.normalizeAll()
 
-    allStubs = cy.stub().log(false)
+        allStubs = cy.stub().log(false)
 
-    cy.stub(this.Cypress, 'emit').callsFake(allStubs)
-    cy.stub(this.Cypress, 'emitMap').callsFake(allStubs)
-    cy.stub(this.Cypress, 'emitThen').callsFake((...args) => {
-      allStubs(...args)
+        cy.stub(this.Cypress, 'emit').callsFake(allStubs)
+        cy.stub(this.Cypress, 'emitMap').callsFake(allStubs)
+        cy.stub(this.Cypress, 'emitThen').callsFake((...args) => {
+          allStubs(...args)
 
-      return Promise.resolve()
+          return Promise.resolve()
+        })
+
+        return new Cypress.Promise((resolve) => {
+          return this.Cypress.run(resolve)
+        })
+        .tap(() => {
+          this.Cypress.env('RETRIES', 0)
+        })
+      }
     })
-
-    backupCypress.mocha.override()
-
-    this.runMochaTests = (obj) => {
-      this.Cypress.mocha.override()
-
-      helpers.generateMochaTestsForWin(autWindow, obj)
-
-      this.Cypress.normalizeAll()
-
-      return new Cypress.Promise((resolve) => {
-        return this.Cypress.run(resolve)
-      })
-      .tap(() => {
-        this.Cypress.env('RETRIES', 0)
-      })
-    }
-
   })
 
   describe('isolated runner', function () {
@@ -131,7 +121,6 @@ describe('src/cypress/runner', () => {
       })
       .then(shouldHavePassed())
       .then(() => {
-
         assertMatch(formatEvents(allStubs), [
           ['run:start'],
           [
@@ -762,7 +751,7 @@ describe('src/cypress/runner', () => {
     })
 
     describe('retries', () => {
-      it.only('simple retry', function () {
+      it.skip('simple retry', function () {
         this.Cypress.env('RETRIES', 1)
 
         return this.runMochaTests({
@@ -972,7 +961,6 @@ const assertMatch = (act, exp, message) => {
 }
 
 function copyToClipboard (text) {
-
   let aux = document.createElement('input')
 
   aux.setAttribute('value', text)
