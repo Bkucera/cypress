@@ -1,4 +1,6 @@
-const { _ } = Cypress
+/* eslint arrow-body-style: "off" */
+
+const { _, Promise } = Cypress
 
 const getFirstSubjectByName = (name) => {
   return cy.queue.find({ name }).get('subject')
@@ -11,29 +13,38 @@ const getQueueNames = () => {
 const createHooks = (win, hooks = []) => {
   _.each(hooks, (hook) => {
 
-    if (_.isObject(hook)) {
-      let { type, fail, fn } = hook
-
-      if (fn) {
-        return win[type](new Function(fn.toString()))
-      }
-
-      if (fail) {
-
-        return win[type](() => {
-          if (_.isNumber(fail) && fail--) {
-            return
-          }
-
-          throw new Error(`hook failed: ${type}`)
-
-        })
-      }
-
-      return win[type](() => {})
+    if (_.isString(hook)) {
+      hook = { type: hook }
     }
 
-    win[hook](() => {})
+    let { type, fail, fn } = hook
+
+    if (fn) {
+      return win[type](new Function(fn.toString()))
+    }
+
+    if (fail) {
+
+      const numFailures = fail
+
+      return win[type](() => {
+        if (_.isNumber(fail) && fail--) {
+          debug(`hook pass after (${numFailures}) failures: ${type}`)
+
+          return
+        }
+
+        debug(`hook fail: ${type}`)
+
+        throw new Error(`hook failed: ${type}`)
+
+      })
+    }
+
+    return win[type](() => {
+      debug(`hook pass: ${type}`)
+    })
+
   })
 }
 
@@ -52,7 +63,18 @@ const createTests = (win, tests = []) => {
     }
 
     if (fn) {
-      return it(name, new Function(fn.toString()))
+      // fn = parseFunction(fn)
+
+      // if (test._fn) {
+      //   fn = test._fn
+      // }
+
+      // console.log(fn.toString())
+
+      return it(name, fn)
+      // () => {
+      //   return eval(`(${fn.toString()})()`)
+      // })
     }
 
     if (pending) {
@@ -62,16 +84,20 @@ const createTests = (win, tests = []) => {
     if (fail) {
       return it(name, () => {
         if (_.isNumber(fail) && fail-- === 0) {
+          debug(`test pass after retry: ${name}`)
+
           return
         }
 
-        console.log(`test failed: ${name}`)
+        debug(`test failed: ${name}`)
 
-        throw new Error(`test failed: ${name}`)
+        throw new Error(`test fail: ${name}`)
       })
     }
 
-    return it(name, () => {})
+    return it(name, () => {
+      debug(`test pass: ${name}`)
+    })
 
   })
 }
@@ -92,10 +118,45 @@ const generateMochaTestsForWin = (win, obj) => {
   createSuites(win, obj.suites)
 }
 
+const debug = require('debug')('spec')
+
+window.localStorage.debug = 'spec*'
+
 module.exports = {
   getQueueNames,
 
   getFirstSubjectByName,
 
   generateMochaTestsForWin,
+
+  defer () {
+    let resolve
+    let reject
+    let isPending = true
+    let promise = new Promise(function (res, rej) {
+      resolve = res
+      reject = rej
+    }).finally(() => {
+      isPending = false
+    })
+
+    return {
+      resolve,
+      reject,
+      promise,
+      isPending: () => isPending,
+    }
+  },
+
+}
+
+const parseFunction = function (fn) {
+  let funcReg = /function *\w*\(([^()]*)\)[ \n\t]*{(.*)}/gmi
+  let match = funcReg.exec(fn.toString().replace(/(\/\/.*?)\n/g, '').replace(/\n/g, ' '))
+
+  if (match) {
+    return new Function(match[1].split(','), match[2])
+  }
+
+  return null
 }

@@ -661,7 +661,7 @@ module.exports = (Commands, Cypress, cy, state, config) ->
             ## TODO: add in other things we want to preserve
             ## state for like scrollTop
             s = {
-              currentId: id
+              currentId:  id
               tests:     Cypress.getTestsState()
               startTime: Cypress.getStartTime()
               emissions: Cypress.getEmissions()
@@ -678,6 +678,8 @@ module.exports = (Commands, Cypress, cy, state, config) ->
               s = _.reduce a, (memo, obj) ->
                 _.extend(memo, obj)
               , s
+
+              console.log('collect:state:', s)
 
               Cypress.backend("preserve:run:state", s)
             .then ->

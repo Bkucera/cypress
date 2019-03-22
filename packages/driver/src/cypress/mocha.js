@@ -13,7 +13,7 @@ const SUITE_RUNNABLE_PROPS = ['_beforeAll', '_beforeEach', '_afterEach', '_after
 
 const testClone = Test.prototype.clone
 const runnerRun = Runner.prototype.run
-const runnerFail = Runner.prototype.fail
+// const runnerFail = Runner.prototype.fail
 const runnableRun = Runnable.prototype.run
 const runnableClearTimeout = Runnable.prototype.clearTimeout
 const runnableResetTimeout = Runnable.prototype.resetTimeout
@@ -91,9 +91,9 @@ const getRunner = function (_mocha) {
   return _mocha.run()
 }
 
-const restoreTestClone = () => {
-  return Test.prototype.clone = testClone
-}
+// const restoreTestClone = () => {
+//   return Test.prototype.clone = testClone
+// }
 
 const restoreRunnableClearTimeout = () => {
   return Runnable.prototype.clearTimeout = runnableClearTimeout
@@ -107,26 +107,9 @@ const restoreRunnerRun = () => {
   return Runner.prototype.run = runnerRun
 }
 
-const restoreRunnerFail = () => {
-  return Runner.prototype.fail = runnerFail
-}
-
-const patchTestClone = () => {
-  return Test.prototype.clone = function (...args) {
-    if (this.trueFn) {
-      this.fn = this.trueFn
-    }
-
-    const ret = testClone.apply(this, args)
-
-    // this.callTestAfterRun()
-
-    ret.id = this.id
-    delete ret.err
-
-    return ret
-  }
-}
+// const restoreRunnerFail = () => {
+//   return Runner.prototype.fail = runnerFail
+// }
 
 //# matching the current Runner.prototype.fail except
 //# changing the logic for determing whether this is a valid err
@@ -152,10 +135,34 @@ const overrideRunnerFail = (runner) => {
 
 const overrideRunnableRun = (runnable, onRunnableRun) => {
   runnable.run = function (...args) {
+
     // call the original onRunnableRun function
     // with the original runnable.run function,
     // the runnable itself, and the args
+    // debugger
+
     return onRunnableRun(runnableRun, runnable, args)
+  }
+
+  runnable.clone = function (...args) {
+    if (this.trueFn) {
+      this.fn = this.trueFn
+    }
+
+    const ret = testClone.apply(this, args)
+
+    overrideRunnableRun(ret, onRunnableRun)
+    // console.log(this, ret)
+
+    // ret.attempts = this.attempts || []
+
+    // ret.attempts.push(this)
+
+    ret.id = this.id
+
+    delete ret.err
+
+    return ret
   }
 }
 
@@ -225,17 +232,16 @@ const patchRunnableResetTimeout = () => {
 }
 
 const restore = function () {
-  restoreRunnerRun()
-  restoreRunnerFail()
+  // restoreRunnerRun()
+  // restoreRunnerFail()
   restoreRunnableClearTimeout()
-  restoreTestClone()
+  // restoreTestClone()
 
   return restoreRunnableResetTimeout()
 }
 
 const patch = function () {
   patchRunnableClearTimeout()
-  patchTestClone()
 
   return patchRunnableResetTimeout()
 }

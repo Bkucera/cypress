@@ -275,7 +275,6 @@ useChaiJquery = (chai) ->
   })
 
 create = (specWindow, assertFn) ->
-  debugger
   chai = $ChaiFactory.create()
 
   chai.use(sinonChai)

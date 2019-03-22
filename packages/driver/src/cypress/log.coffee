@@ -148,6 +148,7 @@ defaults = (state, config, obj) ->
     url:              state("url")
     hookName:         state("hookName")
     testId:           state("runnable").id
+    attemptIndex:          state("runnable").attemptIndex || 0
     viewportWidth:    state("viewportWidth")
     viewportHeight:   state("viewportHeight")
     referencesAlias:  undefined

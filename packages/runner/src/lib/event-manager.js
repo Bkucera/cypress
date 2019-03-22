@@ -183,7 +183,7 @@ const eventManager = {
 
   initialize ($autIframe, config) {
     Cypress.initialize($autIframe)
-
+    Cypress._channel = channel
     // get the current runnable in case we reran mid-test due to a visit
     // to a new domain
     channel.emit('get:existing:run:state', (state = {}) => {
