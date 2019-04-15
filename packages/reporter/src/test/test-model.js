@@ -23,7 +23,7 @@ export default class Test extends Runnable {
 
     this._state = props.state
     this.err.update(props.err)
-
+    
     autorun(() => {
       // if at any point, a command goes long running, set isLongRunning
       // to true until the test becomes inactive

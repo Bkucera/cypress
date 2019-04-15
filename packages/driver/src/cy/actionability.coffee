@@ -209,7 +209,11 @@ verify = (cy, $el, options, callbacks) ->
 
   { _log, force, position } = options
 
-  { onReady, onScroll } = callbacks
+  { onReady, onScroll, onRetry } = callbacks
+
+  if not onRetry
+    onRetry = (err, opts, cb) ->
+      cb()
 
   if not onReady
     throw new Error("actionability.verify must be passed an onReady callback")
@@ -274,7 +278,8 @@ verify = (cy, $el, options, callbacks) ->
         runAllChecks()
       catch err
         options.error = err
-        cy.retry(retryActionability, options)
+        onRetry err, options, ->
+          cy.retry(retryActionability, options)
 
 module.exports = {
   delay

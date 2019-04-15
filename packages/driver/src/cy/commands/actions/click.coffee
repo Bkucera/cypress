@@ -139,6 +139,43 @@ module.exports = (Commands, Cypress, cy, state, config) ->
         ## once we establish the coordinates and the element
         ## passes all of the internal checks
         $actionability.verify(cy, $el, options, {
+
+          onRetry: (err, options, cb) ->
+            debugger
+            cb()
+            return
+            # console.log(err, options)
+            console.log(err.message)
+            if err.message.includes('0 x 0')
+              debugger
+              retry = new Promise res ->
+                prevCommands = []
+                callPrev = (prev) ->
+                  debugger
+                  res = prev.fn.call(null, prev.args...)
+
+                cmd = cy.state('current')
+                while (cmd.attributes.prev)
+                  prevCommands.push(cmd.attributes.prev)
+                
+                prevCommands.forEach prevCmd ->
+                  attrs = prevCmd.attributes
+                  callPrev(attrs)
+                
+                console.log(res)
+              .catch ->
+                console.log 'caught some error'
+              
+              retry()
+              .then () ->
+                cb()
+                  
+                
+
+
+              # )
+              # console.log('detached')
+
           onScroll: ($el, type) ->
             Cypress.action("cy:scrolled", $el, type)
 
